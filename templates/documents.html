@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Documents - DocTagger AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Doc<span>Tagger</span> AI</a>
+    <ul>
+        <li><a href="/">Upload</a></li>
+        <li><a href="/documents">My Documents</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-success">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <h1>📂 My Documents</h1>
+        <p class="subtitle">All uploaded documents with AI-generated tags, categories, and metadata.</p>
+
+        <!-- Search Bar -->
+        <form method="GET" action="/documents" class="search-row">
+            <input type="text" name="q" placeholder="🔍 Search by filename, tag, or category..."
+                value="{{ query }}" class="search-input">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if query %}
+            <a href="/documents" class="btn btn-secondary">Clear</a>
+            {% endif %}
+        </form>
+
+        {% if query %}
+        <p style="font-size:13px; color:#888; margin-bottom:15px;">
+            Showing results for "<strong>{{ query }}</strong>" — {{ docs | length }} found
+        </p>
+        {% endif %}
+
+        {% if docs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Filename</th>
+                    <th>Category</th>
+                    <th>Words</th>
+                    <th>Size</th>
+                    <th>Date</th>
+                    <th>Tags</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in docs %}
+                <tr>
+                    <td style="color:#aaa;">{{ doc.id }}</td>
+                    <td class="filename">📄 {{ doc.filename }}</td>
+                    <td>
+                        <span class="category-badge cat-{{ doc.category | lower }}">
+                            {{ doc.category or 'General' }}
+                        </span>
+                    </td>
+                    <td style="color:#777;">{{ doc.word_count or '—' }}</td>
+                    <td style="color:#777;">{{ (doc.file_size / 1024) | round(1) }} KB</td>
+                    <td style="color:#777;">{{ doc.upload_date }}</td>
+                    <td>
+                        {% for tag in doc.tags %}
+                            <span class="tag-small">{{ tag }}</span>
+                        {% endfor %}
+                        {% if not doc.tags %}
+                            <span style="color:#ccc; font-size:12px;">No tags</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="/delete/{{ doc.id }}" method="POST"
+                            onsubmit="return confirm('Delete this document?')">
+                            <button type="submit" class="btn btn-danger">🗑 Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-docs">
+            {% if query %}
+            <p>No documents match "<strong>{{ query }}</strong>".</p>
+            <a href="/documents" class="btn btn-secondary">Show All</a>
+            {% else %}
+            <p>No documents uploaded yet.</p>
+            <a href="/" class="btn btn-primary">Upload Your First Document</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

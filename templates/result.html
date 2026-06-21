@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tags Result - DocTagger AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Doc<span>Tagger</span> AI</a>
+    <ul>
+        <li><a href="/">Upload</a></li>
+        <li><a href="/documents">My Documents</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <div class="card">
+        <h1>🏷️ Tags Extracted</h1>
+        <p class="subtitle">AI has analyzed your document. Review and customize the tags below.</p>
+
+        <!-- Metadata Row -->
+        <div class="doc-info">
+            <div class="info-item"><strong>📄</strong> {{ doc.filename }}</div>
+            <div class="info-item"><strong>📦</strong> {{ (doc.file_size / 1024) | round(1) }} KB</div>
+            <div class="info-item"><strong>📝</strong> {{ doc.word_count }} words</div>
+            <div class="info-item"><strong>⏱️</strong> ~{{ ((doc.word_count / 200) | round(0) | int) or 1 }} min read</div>
+            <div class="info-item"><strong>📅</strong> {{ doc.upload_date }}</div>
+            <div class="info-item">
+                <strong>🗂️ Category:</strong>
+                <span class="category-badge cat-{{ doc.category | lower }}">{{ doc.category }}</span>
+            </div>
+        </div>
+
+        <hr style="border:none; border-top:1px solid #eee; margin: 20px 0;">
+
+        <!-- Selected Tags (clickable to remove) -->
+        <h3 class="section-title">✅ Selected Tags <span class="hint">— click a tag to remove it</span></h3>
+        <div class="tags-container" id="selectedTags">
+            {% for tag in doc.tags %}
+            <span class="chip chip-selected" onclick="removeTag(this)" title="Click to remove">
+                {{ tag }} <span class="chip-x">×</span>
+            </span>
+            {% endfor %}
+            {% if not doc.tags %}
+            <p style="color:#aaa; font-style:italic; font-size:13px;">No tags extracted.</p>
+            {% endif %}
+        </div>
+
+        <!-- Suggested Tags (clickable to add) -->
+        {% if suggested_tags %}
+        <h3 class="section-title" style="margin-top:22px;">💡 Keyword Suggestions <span class="hint">— click to add</span></h3>
+        <div class="tags-container" id="suggestedTags">
+            {% for tag in suggested_tags %}
+            <span class="chip chip-suggestion" onclick="addTag(this)" title="Click to add">
+                + {{ tag }}
+            </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Custom Tag Input -->
+        <div style="margin-top: 22px;">
+            <h3 class="section-title">✏️ Add Custom Tag</h3>
+            <div class="custom-tag-row">
+                <input type="text" id="customTagInput" placeholder="Type a tag and press Enter or click Add"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault(); addCustomTag();}">
+                <button class="btn btn-secondary" onclick="addCustomTag()">Add</button>
+            </div>
+        </div>
+
+        <hr style="border:none; border-top:1px solid #eee; margin: 22px 0;">
+
+        <!-- Save Form -->
+        <form action="/update_tags/{{ doc.id }}" method="POST" onsubmit="syncTags()">
+            <input type="hidden" name="tags" id="tagsHidden" value="{{ doc.tags | join(', ') }}">
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">💾 Save Tags</button>
+                <a href="/" class="btn btn-secondary">Upload Another</a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // Sync selected chip labels to the hidden input before form submit
+    function syncTags() {
+        const chips = document.querySelectorAll('#selectedTags .chip-selected');
+        const tags = Array.from(chips).map(c => {
+            // Get text without the × button
+            return c.childNodes[0].textContent.trim();
+        });
+        document.getElementById('tagsHidden').value = tags.join(', ');
+    }
+
+    function removeTag(chip) {
+        const tag = chip.childNodes[0].textContent.trim();
+        chip.remove();
+
+        // Put it back in suggestions
+        const suggBox = document.getElementById('suggestedTags');
+        if (suggBox) {
+            const newChip = document.createElement('span');
+            newChip.className = 'chip chip-suggestion';
+            newChip.title = 'Click to add';
+            newChip.textContent = '+ ' + tag;
+            newChip.onclick = function() { addTag(this); };
+            suggBox.appendChild(newChip);
+        }
+    }
+
+    function addTag(chip) {
+        const tag = chip.textContent.replace(/^\+\s*/, '').trim();
+
+        // Check not already selected
+        const existing = Array.from(document.querySelectorAll('#selectedTags .chip-selected'))
+            .map(c => c.childNodes[0].textContent.trim());
+        if (existing.includes(tag)) { chip.remove(); return; }
+
+        // Add to selected
+        const selectedBox = document.getElementById('selectedTags');
+        const newChip = document.createElement('span');
+        newChip.className = 'chip chip-selected';
+        newChip.title = 'Click to remove';
+        newChip.innerHTML = tag + ' <span class="chip-x">×</span>';
+        newChip.onclick = function() { removeTag(this); };
+        selectedBox.appendChild(newChip);
+
+        chip.remove();
+    }
+
+    function addCustomTag() {
+        const input = document.getElementById('customTagInput');
+        const tag = input.value.trim().toLowerCase();
+        if (!tag) return;
+
+        const existing = Array.from(document.querySelectorAll('#selectedTags .chip-selected'))
+            .map(c => c.childNodes[0].textContent.trim());
+        if (existing.includes(tag)) { input.value = ''; return; }
+
+        const selectedBox = document.getElementById('selectedTags');
+        const newChip = document.createElement('span');
+        newChip.className = 'chip chip-selected';
+        newChip.title = 'Click to remove';
+        newChip.innerHTML = tag + ' <span class="chip-x">×</span>';
+        newChip.onclick = function() { removeTag(this); };
+        selectedBox.appendChild(newChip);
+
+        input.value = '';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Document Auto-Tagging System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Doc<span>Tagger</span> AI</a>
+    <ul>
+        <li><a href="/">Upload</a></li>
+        <li><a href="/documents">My Documents</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-info">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <h1>AI Document Auto-Tagging</h1>
+        <p class="subtitle">Upload a document and let AI automatically extract and suggest tags for it.</p>
+
+        <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📄</div>
+                <p><strong>Click to select a file</strong></p>
+                <p class="small">Supported formats: .txt, .pdf</p>
+                <div class="file-chosen" id="fileChosen" style="display:none;"></div>
+            </div>
+            <input type="file" id="fileInput" name="file" accept=".txt,.pdf" onchange="showFileName(this)">
+            <div class="submit-row">
+                <button type="submit" class="btn btn-primary">🔍 Extract Tags</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card" style="margin-top: 25px; background: #f8fbff;">
+        <h1 style="font-size: 18px; margin-bottom: 12px;">How it works</h1>
+        <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 180px;">
+                <div style="font-size: 28px; margin-bottom: 8px;">📤</div>
+                <strong>1. Upload</strong>
+                <p style="font-size: 13px; color: #777; margin-top: 5px;">Upload any .txt or .pdf document</p>
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <div style="font-size: 28px; margin-bottom: 8px;">🤖</div>
+                <strong>2. AI Analyzes</strong>
+                <p style="font-size: 13px; color: #777; margin-top: 5px;">NLP reads and extracts key topics</p>
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <div style="font-size: 28px; margin-bottom: 8px;">🏷️</div>
+                <strong>3. Get Tags</strong>
+                <p style="font-size: 13px; color: #777; margin-top: 5px;">Review, edit, and save your tags</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function showFileName(input) {
+        const el = document.getElementById('fileChosen');
+        if (input.files.length > 0) {
+            el.textContent = '✅ Selected: ' + input.files[0].name;
+            el.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
