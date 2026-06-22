@@ -64,7 +64,7 @@
                 {% for doc in docs %}
                 <tr>
                     <td style="color:#aaa;">{{ doc.id }}</td>
-                    <td class="filename">📄 {{ doc.filename }}</td>
+                    <td class="filename"><a href="/view/{{ doc.id }}" class="doc-link">📄 {{ doc.filename }}</a></td>
                     <td>
                         <span class="category-badge cat-{{ doc.category | lower }}">
                             {{ doc.category or 'General' }}

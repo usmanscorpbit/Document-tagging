@@ -92,6 +92,18 @@ def documents():
                 query in d.get('category', '').lower()]
     return render_template('documents.html', docs=docs, query=query)
 
+@app.route('/view/<int:doc_id>')
+def view(doc_id):
+    doc = get_document(doc_id)
+    if not doc:
+        flash('Document not found.')
+        return redirect(url_for('documents'))
+    text = ''
+    if os.path.exists(doc['filepath']):
+        ext = doc['filename'].rsplit('.', 1)[-1].lower()
+        text = read_text_from_file(doc['filepath'], ext)
+    return render_template('view.html', doc=doc, text=text)
+
 @app.route('/delete/<int:doc_id>', methods=['POST'])
 def delete(doc_id):
     delete_document(doc_id)

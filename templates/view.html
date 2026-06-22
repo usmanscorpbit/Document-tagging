@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ doc.filename }} - DocTagger AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Doc<span>Tagger</span> AI</a>
+    <ul>
+        <li><a href="/">Upload</a></li>
+        <li><a href="/documents">My Documents</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- Header -->
+        <div class="view-header">
+            <div>
+                <h1>📄 {{ doc.filename }}</h1>
+                <p class="subtitle">Document details, tags, and content preview.</p>
+            </div>
+            <a href="/documents" class="btn btn-secondary">← Back</a>
+        </div>
+
+        <!-- Metadata -->
+        <div class="doc-info">
+            <div class="info-item"><strong>📦</strong> {{ (doc.file_size / 1024) | round(1) }} KB</div>
+            <div class="info-item"><strong>📝</strong> {{ doc.word_count }} words</div>
+            <div class="info-item"><strong>⏱️</strong> ~{{ ((doc.word_count / 200) | round(0) | int) or 1 }} min read</div>
+            <div class="info-item"><strong>📅</strong> {{ doc.upload_date }}</div>
+            <div class="info-item">
+                <strong>🗂️ Category:</strong>
+                <span class="category-badge cat-{{ doc.category | lower }}">{{ doc.category }}</span>
+            </div>
+            <div class="info-item"><strong>🏷️ Tags:</strong> {{ doc.tags | length }}</div>
+        </div>
+
+        <hr style="border:none; border-top:1px solid #eee; margin: 20px 0;">
+
+        <!-- Tags -->
+        <h3 class="section-title">🏷️ Tags</h3>
+        <div class="tags-container" style="margin-bottom: 25px;">
+            {% for tag in doc.tags %}
+                <a href="/documents?q={{ tag }}" class="tag" title="Search documents with this tag">{{ tag }}</a>
+            {% endfor %}
+            {% if not doc.tags %}
+                <p style="color:#aaa; font-style:italic; font-size:13px;">No tags.</p>
+            {% endif %}
+        </div>
+
+        <hr style="border:none; border-top:1px solid #eee; margin: 20px 0;">
+
+        <!-- Document Content -->
+        <h3 class="section-title">📃 Document Content</h3>
+
+        {% if text %}
+            <div class="doc-content">{{ text }}</div>
+        {% else %}
+            <div class="no-content">
+                <p>⚠️ File not found on server. The document may have been moved or deleted from the uploads folder.</p>
+            </div>
+        {% endif %}
+
+        <hr style="border:none; border-top:1px solid #eee; margin: 25px 0;">
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <a href="/documents" class="btn btn-secondary">← Back to Documents</a>
+            <form action="/delete/{{ doc.id }}" method="POST"
+                onsubmit="return confirm('Delete this document?')" style="display:inline;">
+                <button type="submit" class="btn btn-danger">🗑 Delete</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

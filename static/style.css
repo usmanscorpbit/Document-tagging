@@ -447,3 +447,61 @@ tbody td {
     outline: none;
     border-color: #3498db;
 }
+
+/* Clickable filename link in documents table */
+.doc-link {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.doc-link:hover {
+    color: #3498db;
+    text-decoration: underline;
+}
+
+/* View page header */
+.view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Document content box */
+.doc-content {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #444;
+    white-space: pre-wrap;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* No content warning */
+.no-content {
+    background: #fef9e7;
+    border: 1px solid #f9e79f;
+    border-radius: 8px;
+    padding: 15px 20px;
+    color: #7d6608;
+    font-size: 14px;
+}
+
+/* Make tags clickable on view page */
+.tag {
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tag:hover {
+    background: #aed6f1;
+    color: #1a5276;
+}
