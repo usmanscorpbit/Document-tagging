@@ -66,7 +66,7 @@
         </div>
 
         {% if text %}
-            <div class="doc-content" id="docContent" data-tags="{{ doc.tags | tojson | e }}">{{ text }}</div>
+            <div class="doc-content" id="docContent" data-tags='{{ doc.tags | tojson }}'>{{ text }}</div>
         {% else %}
             <div class="no-content">
                 <p>⚠️ File not found on server. The document may have been moved or deleted from the uploads folder.</p>
