@@ -492,6 +492,31 @@ tbody td {
     overflow-y: auto;
 }
 
+/* Tag highlight inside document content */
+.tag-highlight {
+    background: #fff176;
+    color: #333;
+    border-radius: 3px;
+    padding: 1px 3px;
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* Legend next to content heading */
+.highlight-legend {
+    font-size: 12px;
+    color: #888;
+}
+
+.tag-highlight-demo {
+    background: #fff176;
+    color: #333;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 /* No content warning */
 .no-content {
     background: #fef9e7;

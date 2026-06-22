@@ -58,10 +58,15 @@
         <hr style="border:none; border-top:1px solid #eee; margin: 20px 0;">
 
         <!-- Document Content -->
-        <h3 class="section-title">📃 Document Content</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 class="section-title" style="margin-bottom:0;">📃 Document Content</h3>
+            <span class="highlight-legend">
+                <span class="tag-highlight-demo">highlighted</span> = extracted tag
+            </span>
+        </div>
 
         {% if text %}
-            <div class="doc-content">{{ text }}</div>
+            <div class="doc-content" id="docContent">{{ text }}</div>
         {% else %}
             <div class="no-content">
                 <p>⚠️ File not found on server. The document may have been moved or deleted from the uploads folder.</p>
@@ -81,6 +86,30 @@
 
     </div>
 </div>
+
+<script>
+    const tags = {{ doc.tags | tojson }};
+    const contentEl = document.getElementById('docContent');
+
+    if (contentEl && tags.length > 0) {
+        // Escape HTML to prevent XSS, then highlight
+        let html = contentEl.textContent
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        // Sort longest tags first so multi-word tags match before single words
+        const sorted = [...tags].sort((a, b) => b.length - a.length);
+
+        sorted.forEach(tag => {
+            const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp('\\b(' + escaped + ')\\b', 'gi');
+            html = html.replace(regex, '<mark class="tag-highlight">$1</mark>');
+        });
+
+        contentEl.innerHTML = html;
+    }
+</script>
 
 </body>
 </html>
