@@ -66,7 +66,7 @@
         </div>
 
         {% if text %}
-            <div class="doc-content" id="docContent">{{ text }}</div>
+            <div class="doc-content" id="docContent" data-tags="{{ doc.tags | tojson | e }}">{{ text }}</div>
         {% else %}
             <div class="no-content">
                 <p>⚠️ File not found on server. The document may have been moved or deleted from the uploads folder.</p>
@@ -88,8 +88,8 @@
 </div>
 
 <script>
-    const tags = {{ doc.tags | tojson }};
     const contentEl = document.getElementById('docContent');
+    const tags = contentEl ? JSON.parse(contentEl.dataset.tags || '[]') : [];
 
     if (contentEl && tags.length > 0) {
         // Escape HTML to prevent XSS, then highlight
