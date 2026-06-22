@@ -202,6 +202,14 @@ input[type="file"] {
     font-size: 14px;
     border: 1px solid #aed6f1;
     font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tag:hover {
+    background: #aed6f1;
+    color: #1a5276;
 }
 
 .tag-small {
@@ -494,14 +502,3 @@ tbody td {
     font-size: 14px;
 }
 
-/* Make tags clickable on view page */
-.tag {
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.tag:hover {
-    background: #aed6f1;
-    color: #1a5276;
-}
